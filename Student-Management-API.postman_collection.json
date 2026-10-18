@@ -1,0 +1,76 @@
+{
+  "info": {
+    "name": "Student Management API",
+    "description": "Register/login and JWT-protected student CRUD endpoints. Set baseUrl to http://localhost:8080.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8080"},
+    {"key": "token", "value": ""},
+    {"key": "studentId", "value": "1"}
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"studentuser\",\n  \"password\": \"Student@123\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["if (pm.response.code === 201 || pm.response.code === 200) {", "  const body = pm.response.json();", "  if (body.token) pm.collectionVariables.set('token', body.token);", "}"]}}]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"studentuser\",\n  \"password\": \"Student@123\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["if (pm.response.code === 200) {", "  const body = pm.response.json();", "  if (body.token) pm.collectionVariables.set('token', body.token);", "}"]}}]
+        }
+      ]
+    },
+    {
+      "name": "Students (JWT required)",
+      "item": [
+        {
+          "name": "Add Student",
+          "request": {
+            "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"email\": \"aarav@example.com\",\n  \"branch\": \"Computer Engineering\",\n  \"year\": 2\n}"},
+            "url": {"raw": "{{baseUrl}}/api/students", "host": ["{{baseUrl}}"], "path": ["api", "students"]}
+          }
+        },
+        {
+          "name": "Get All Students",
+          "request": {"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]}, "method": "GET", "url": {"raw": "{{baseUrl}}/api/students", "host": ["{{baseUrl}}"], "path": ["api", "students"]}}
+        },
+        {
+          "name": "Get Student by ID",
+          "request": {"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]}, "method": "GET", "url": {"raw": "{{baseUrl}}/api/students/{{studentId}}", "host": ["{{baseUrl}}"], "path": ["api", "students", "{{studentId}}"]}}
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"email\": \"aarav@example.com\",\n  \"branch\": \"Information Technology\",\n  \"year\": 3\n}"},
+            "url": {"raw": "{{baseUrl}}/api/students/{{studentId}}", "host": ["{{baseUrl}}"], "path": ["api", "students", "{{studentId}}"]}
+          }
+        },
+        {
+          "name": "Delete Student",
+          "request": {"auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]}, "method": "DELETE", "url": {"raw": "{{baseUrl}}/api/students/{{studentId}}", "host": ["{{baseUrl}}"], "path": ["api", "students", "{{studentId}}"]}}
+        }
+      ]
+    }
+  ]
+}
